@@ -23,3 +23,4 @@ class HandTracking:
             self.mpDraw.draw_landmarks(img, handLMS, mp.solutions.hands.HAND_CONNECTIONS)
         return img
 
+
