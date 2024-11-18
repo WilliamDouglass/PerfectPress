@@ -8,7 +8,7 @@ class HandTracking:
         self.hands = self.mpHands.Hands()
         self.mpDraw = mp.solutions.drawing_utils
 
-    def get_hands(self,input_img):
+    def get_hand_landmarks(self,input_img):
 
         # bgr -> rgb
         img_rgb = cv.cvtColor(input_img, cv.COLOR_BGR2RGB)
