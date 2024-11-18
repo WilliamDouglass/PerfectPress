@@ -194,7 +194,7 @@ def main():
         # Display the frame
         cv.imshow('Webcam Feed', frame)
 
-
+        print(cv.waitKey(1) & 0xFF)
         # Wait for a key press to break the loop (press 'q' to exit)
         if cv.waitKey(1) & 0xFF == ord('q'):
             break

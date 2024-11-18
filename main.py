@@ -106,7 +106,7 @@ def main():
     cap.set(cv.CAP_PROP_FPS, 30)
 
     mpHands = mp.solutions.hands
-    hands = mpHands.Hands()
+    hands = mpHands.Hands(max_num_hands=8)
     mpDraw = mp.solutions.drawing_utils
 
     pTime = 0  # Previous time
