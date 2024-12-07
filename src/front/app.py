@@ -1,15 +1,13 @@
 import sys
 import cv2 as cv
-import numpy as np
 from PyQt5.QtCore import QTimer, Qt
 from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QPushButton, QVBoxLayout, QWidget, QHBoxLayout, \
-    QCheckBox, QSizePolicy
-from numpy.core.defchararray import count
+    QCheckBox
 import keyboard
 
-from kbm_tracking import KeyboardTracker
-from hand_tracking import HandTracker
+from src.back.kbm_tracking import KeyboardTracker
+from src.back.hand_tracking import HandTracker
 
 c = 0
 

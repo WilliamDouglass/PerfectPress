@@ -204,7 +204,7 @@ class KeyboardTracker:
 
     def init_kbm_template(self):
         # Load and prepare the template in grayscale
-        og_template = cv.imread('./Resources/kbm_template.jpg')
+        og_template = cv.imread('../../Resources/kbm_template.jpg')
 
         # Ensure the image was loaded
         if og_template is None:
