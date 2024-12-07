@@ -66,7 +66,7 @@ class VideoApp(QMainWindow):
             padding: 5px;
         """)
 
-        # Initialize the warped_video label
+        # Initialize the video_feed label
         self.warped_video = QLabel(self)
         self.warped_video.setAlignment(Qt.AlignCenter)
         self.warped_video.setText("Warped Video Area")  # Optional: Placeholder text
@@ -93,18 +93,18 @@ class VideoApp(QMainWindow):
         # Disable focus on buttons
         self.disable_button_focus()
 
-        # Create a horizontal layout to center the warped_video label
+        # Create a horizontal layout to center the video_feed label
         center_layout = QHBoxLayout()
         # center_layout.addStretch()  # Add stretch on the left side
-        center_layout.addWidget(self.warped_video)  # Add the warped_video label
+        center_layout.addWidget(self.warped_video)  # Add the video_feed label
         # center_layout.addStretch()  # Add stretch on the right side
 
         # Create the main layout
         layout = QVBoxLayout(self)
         layout.addWidget(self.text_box)  # Add text_box at the top
-        layout.addLayout(center_layout)  # Add the centered warped_video label
+        layout.addLayout(center_layout)  # Add the centered video_feed label
 
-        # Set the maximum width of the warped_video to half the window's width
+        # Set the maximum width of the video_feed to half the window's width
         self.setGeometry(100, 100, 1400, 700)  # Set window size
         self.warped_video.setMaximumWidth(self.width() / 1.8)  # Make the width half of the window's width
 
@@ -200,7 +200,7 @@ class VideoApp(QMainWindow):
             # Create a QPixmap from the QImage
             pixmap = QPixmap.fromImage(qt_warped_img)
 
-            # Scale the pixmap to fit the size of the warped_video label, maintaining aspect ratio
+            # Scale the pixmap to fit the size of the video_feed label, maintaining aspect ratio
             scaled_pixmap = pixmap.scaled(self.warped_video.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
 
             # Set the scaled pixmap as the label's image
