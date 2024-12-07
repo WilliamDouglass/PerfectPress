@@ -124,3 +124,6 @@ class keyRegions:
             self.buttonMap[key] = self.buttonRegion(index, region)
         else:
             print(f"Index {index} not mapped to a Qt key.")
+
+    def get_key_ID(self, key):
+        print(f"Key: {key}\tID: {self.buttonMap.get(key)}")

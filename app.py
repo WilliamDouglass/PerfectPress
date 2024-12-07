@@ -3,8 +3,10 @@ import cv2 as cv
 import numpy as np
 from PyQt5.QtCore import QTimer, Qt
 from PyQt5.QtGui import QImage, QPixmap
-from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QPushButton, QVBoxLayout, QWidget, QHBoxLayout, QCheckBox
+from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QPushButton, QVBoxLayout, QWidget, QHBoxLayout, \
+    QCheckBox, QSizePolicy
 from numpy.core.defchararray import count
+import keyboard
 
 from kbm_tracking import KeyboardTracker
 from hand_tracking import HandTracker
@@ -37,7 +39,7 @@ class VideoApp(QMainWindow):
 
         # Set up the main UI
         self.setWindowTitle("OpenCV with PyQt5")
-        self.setGeometry(100, 100, 1400, 600)
+        self.setGeometry(100, 100, 1400, 700)
 
         # Set up OpenCV video capture
         self.cap = cv.VideoCapture(0, cv.CAP_DSHOW)
@@ -54,8 +56,31 @@ class VideoApp(QMainWindow):
         self.webcam_video = QLabel(self)
         self.webcam_video.setAlignment(Qt.AlignCenter)
 
+        # Initialize the text_box label
+        self.text_box = QLabel(self)
+        self.text_box.setAlignment(Qt.AlignCenter)
+        self.text_box.setText("This is the example text box")
+        self.text_box.setStyleSheet("""
+            background-color: #282828;
+            color: #ebdbb2;
+            font-size: 20px;
+            border-radius: 10px;
+            padding: 5px;
+        """)
+
+        # Initialize the warped_video label
         self.warped_video = QLabel(self)
         self.warped_video.setAlignment(Qt.AlignCenter)
+        self.warped_video.setText("Warped Video Area")  # Optional: Placeholder text
+        self.warped_video.setStyleSheet("""
+            background-color: #282828;
+            color: #d4d4d4;
+            font-size: 18px;
+            """)
+
+
+
+
 
 
         # Set up the button to trigger recalibrate
@@ -74,14 +99,22 @@ class VideoApp(QMainWindow):
         # Disable focus on buttons
         self.disable_button_focus()
 
-        # Set up the layout
-        layout = QVBoxLayout()
+        # Create a horizontal layout to center the warped_video label
+        center_layout = QHBoxLayout()
+        # center_layout.addStretch()  # Add stretch on the left side
+        center_layout.addWidget(self.warped_video)  # Add the warped_video label
+        # center_layout.addStretch()  # Add stretch on the right side
 
-        # Videos
-        video_layout = QHBoxLayout()
-        video_layout.addWidget(self.webcam_video)
-        video_layout.addWidget(self.warped_video)
-        layout.addLayout(video_layout)
+        # Create the main layout
+        layout = QVBoxLayout(self)
+        layout.addWidget(self.text_box)  # Add text_box at the top
+        layout.addLayout(center_layout)  # Add the centered warped_video label
+
+        # Set the maximum width of the warped_video to half the window's width
+        self.setGeometry(100, 100, 1400, 700)  # Set window size
+        self.warped_video.setMaximumWidth(self.width() / 1.8)  # Make the width half of the window's width
+
+        # Set the main window layout
         layout.addWidget(self.recalibrate_button)
         layout.addWidget(self.draw_kbm_layout)
         layout.addWidget(self.draw_hands_button)
@@ -95,6 +128,17 @@ class VideoApp(QMainWindow):
         self.timer = QTimer()
         self.timer.timeout.connect(self.update_frame)
         self.timer.start(30)  # Set timer to update every 30 ms (about 33 FPS)
+
+        # Set up global keyboard listener
+        keyboard.on_press(self.handle_global_key_press)
+
+    def handle_global_key_press(self, event):
+        """
+        Handles global key press events (from the keyboard library).
+        """
+        key_name = event.name
+        print(f"Global key pressed: {key_name}")
+
 
     def update_frame(self):
         # Read a frame from the camera
@@ -114,40 +158,21 @@ class VideoApp(QMainWindow):
         self.handle_recalibrate()
 
 
-    # Override keyPressEvent
-    def keyPressEvent(self, event):
-        global c
-        key = event.key()
-        keyName = event.text()
-
-        # Check if the key is alphanumeric, punctuation, space, backspace, or special symbols
-        if key == Qt.Key_Backspace:
-            keyName = "Backspace"
-        elif key == Qt.Key_Space:
-            keyName = "Space"
-        elif key == Qt.Key_Enter:
-            keyName = "Enter"
-
-        print(f"Label: {keyName}\tIndex: {c}")
-        c += 1
-
-        # Ignore other keys
-        event.ignore()
-
-
 
     def handleWebcamImage(self, frame):
         # Display FPS on the frame
         frame = self.fps_tracker.display_fps(frame)
 
-        # Convert the frame to RGB format for PyQt
-        rgb_frame = cv.cvtColor(frame, cv.COLOR_BGR2RGB)
-        h, w, ch = rgb_frame.shape
-        bytes_per_line = ch * w
-        qt_image = QImage(rgb_frame.data, w, h, bytes_per_line, QImage.Format_RGB888)
+        cv.imshow("Webcam", frame)
 
-        # Set the image in the QLabel
-        self.webcam_video.setPixmap(QPixmap.fromImage(qt_image))
+        # # Convert the frame to RGB format for PyQt
+        # rgb_frame = cv.cvtColor(frame, cv.COLOR_BGR2RGB)
+        # h, w, ch = rgb_frame.shape
+        # bytes_per_line = ch * w
+        # qt_image = QImage(rgb_frame.data, w, h, bytes_per_line, QImage.Format_RGB888)
+        #
+        # # Set the image in the QLabel
+        # self.webcam_video.setPixmap(QPixmap.fromImage(qt_image))
 
     def handleWarpedImage(self, frame):
         if self.kbmTracker.kbm_corners is None or None in self.kbmTracker.kbm_corners:
@@ -177,7 +202,15 @@ class VideoApp(QMainWindow):
             h, w, ch = rgb_warped_img.shape
             bytes_per_line = ch * w
             qt_warped_img = QImage(rgb_warped_img.data, w, h, bytes_per_line, QImage.Format_RGB888)
-            self.warped_video.setPixmap(QPixmap.fromImage(qt_warped_img))
+
+            # Create a QPixmap from the QImage
+            pixmap = QPixmap.fromImage(qt_warped_img)
+
+            # Scale the pixmap to fit the size of the warped_video label, maintaining aspect ratio
+            scaled_pixmap = pixmap.scaled(self.warped_video.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
+
+            # Set the scaled pixmap as the label's image
+            self.warped_video.setPixmap(scaled_pixmap)
 
     def handle_recalibrate(self):
         if self.recalibrate_active:
@@ -192,13 +225,7 @@ class VideoApp(QMainWindow):
                 self.kbmTracker.recalibrate_projection(self.prev_five_frames)
                 self.recalibrate_active = False
                 self.prev_five_frames = []
-
-    def recalibrate(self):
-        # Call recalibrate() on the current frame
-        ret, frame = self.cap.read()
-        if frame is not None:
-            self.kbmTracker.recalibrate_projection(frame)
-            print("Recalibrate called.")
+                print(self.kbmTracker.transformation_matrix)
 
     def start_recalibration(self):
         print("Recalibrate button clicked.")
@@ -206,6 +233,10 @@ class VideoApp(QMainWindow):
         self.recalibrate_active = True
 
     def closeEvent(self, event):
+
+        keyboard.unhook_all()  # Remove all hooks to prevent lingering listeners
+        event.accept()
+
         # Release video capture when the window is closed
         self.cap.release()
         cv.destroyAllWindows()
