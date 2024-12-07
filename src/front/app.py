@@ -79,10 +79,6 @@ class VideoApp(QMainWindow):
             """)
 
 
-
-
-
-
         # Set up the button to trigger recalibrate
         self.recalibrate_button = QPushButton("Recalibrate", self)
         self.recalibrate_button.clicked.connect(self.start_recalibration)
