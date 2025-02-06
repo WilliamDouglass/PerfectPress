@@ -21,11 +21,9 @@ class MainWindow(QMainWindow):
         # Set the central widget of the main window
         self.setCentralWidget(self.typing_menu)
 
-        # Show the window
-        self.show()
-
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = MainWindow()
+    window.show()
     sys.exit(app.exec_())

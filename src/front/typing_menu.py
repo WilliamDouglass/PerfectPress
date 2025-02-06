@@ -123,7 +123,6 @@ class TypingMenu(QWidget):
         self.layout().update()
 
 
-    pass
 
 
 ########################################################################################################################
@@ -182,6 +181,7 @@ class TypingMenu(QWidget):
 
         return video_feed_area
 
+#TODO: Implement each button from the functions in app.py
     def init_buttons(self):
 
         push_button_style = """
